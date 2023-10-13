@@ -1,6 +1,14 @@
 import getopt
 import sys
 import subprocess
+import os.path
+
+path = "./arp"
+check_file = os.path.isfile(path)
+if check_file == False:
+    arp = open("arp", "x", encoding='utf-8')
+
+arp = open("arp", "a", encoding="utf-8")
 
 data = open("manuf", "r", encoding='utf-8')
 fabricantes = data.readlines()
@@ -13,17 +21,16 @@ def obtener_datos_por_ip(ip):
 # Función para obtener los datos de fabricación de una tarjeta de red por MAC
 def obtener_datos_por_mac(mac):
     datos_mac = None
-    for lista in fabricantes:
-        fabricante = lista.split()
-
-        if mac == fabricante[0]:
-            datos_mac = fabricante[1]
+    for fabricante in fabricantes:
+        linea = fabricante.split()
+        if mac in linea:
+            datos_mac = fabricante
     if datos_mac == None:
         print("No se ha encontrado el fabricante")
+        sys.exit(2)
     else:
         print("Aqui su codigo para obtener los datos por mac", datos_mac)
-    pass
-
+        arp.write(datos_mac)
 # Función para obtener la tabla ARP
 def obtener_tabla_arp():
         # Implementa la lógica para procesar la tabla ARP aquí
