@@ -1,7 +1,8 @@
 import getopt
 import sys
-import subprocess
+from subprocess import Popen, PIPE
 import os.path
+import re
 
 path = "./arp"
 check_file = os.path.isfile(path)
@@ -11,9 +12,18 @@ if check_file == False:
 arp = open("arp", "a", encoding="utf-8")
 
 data = open("manuf", "r", encoding='utf-8')
+
 fabricantes = data.readlines()
 # Función para obtener los datos de fabricación de una tarjeta de red por IP
 def obtener_datos_por_ip(ip):
+    mac = None
+    fabricante_mac = None
+    search = Popen(["arp","-a",ip],stdout = PIPE, stderr= PIPE)
+    var = ((search.communicate()[0].decode('latin-1').split('Tipo\r\n'))[1]).split('     ')
+    MAC = var[2].strip(" ")
+    IP = var[0].strip(" ")
+    print(MAC)
+    print(IP)
     # Implementa la lógica para obtener los datos por IP aquí
     print("Aqui su codigo para obtener los datos por ip")
     pass
@@ -63,8 +73,8 @@ def main(argv):
         obtener_datos_por_ip(ip)
     elif mac:
         obtener_datos_por_mac(mac)
-    elif arp:
-        obtener_tabla_arp()
+    #elif arp:
+        #obtener_tabla_arp()
     else:
         print("Debe proporcionar una opción válida (-i, -m o -a).")
 
