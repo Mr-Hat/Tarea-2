@@ -1,6 +1,6 @@
 import getopt
 import sys
-from subprocess import Popen, PIPE
+import subprocess
 import os.path
 import re
 
@@ -18,15 +18,15 @@ fabricantes = data.readlines()
 def obtener_datos_por_ip(ip):
     mac = None
     fabricante_mac = None
-    search = Popen(["arp","-a",ip],stdout = PIPE, stderr= PIPE)
+    search = subprocess.Popen(["arp","-a",ip],stdout = subprocess.PIPE, stderr= subprocess.PIPE)
     var = ((search.communicate()[0].decode('latin-1').split('Tipo\r\n'))[1]).split('     ')
     MAC = var[2].strip(" ")
     IP = var[0].strip(" ")
     print(MAC)
     print(IP)
+    arp.write(IP, MAC)
     # Implementa la lógica para obtener los datos por IP aquí
     print("Aqui su codigo para obtener los datos por ip")
-    pass
 
 # Función para obtener los datos de fabricación de una tarjeta de red por MAC
 def obtener_datos_por_mac(mac):
@@ -39,13 +39,15 @@ def obtener_datos_por_mac(mac):
         print("No se ha encontrado el fabricante")
         sys.exit(2)
     else:
-        print("Aqui su codigo para obtener los datos por mac", datos_mac)
-        arp.write(datos_mac)
+        print("Aqui está el fabricante de la mac y la mac", datos_mac)
 # Función para obtener la tabla ARP
 def obtener_tabla_arp():
-        # Implementa la lógica para procesar la tabla ARP aquí
-        # Imprime la tabla ARP
-    pass
+        try:
+            resultado = subprocess.check_output(["arp", "-a"], text=True)
+            print("Tabla ARP:")
+            print(resultado)
+        except subprocess.CalledProcessError as e:
+            print(f"Error al obtener la tabla ARP: {e}")
 
 
 def main(argv):
